@@ -1,0 +1,93 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@apiKey={{$dotenv API_KEY}}
+@version=v1beta
+@model=gemini-pro
+
+# Get a list of available models and description
+GET https://generativelanguage.googleapis.com/{{version}}/models?key={{apiKey}}
+
+###
+
+# Get information about the model, including default values
+GET https://generativelanguage.googleapis.com/{{version}}/models/{{model}}?key={{apiKey}}
+
+###
+
+# Send a text-only request
+POST https://generativelanguage.googleapis.com/{{version}}/models/{{model}}:generateContent?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "contents": [{
+    "parts": [{
+      "text": "Write a story about a magic backpack."
+    }]
+  }]
+}
+
+###
+
+# Send a text-only request with model parameters and safety settings
+# Ref: https://ai.google.dev/docs/concepts#model-parameters
+POST https://generativelanguage.googleapis.com/{{version}}/models/{{model}}:generateContent?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "contents": [{
+    "parts": [{
+      "text": "Write a story about a magic backpack."
+    }]
+  }],
+  "safetySettings": [
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_ONLY_HIGH"
+    }
+  ],
+  "generationConfig": {
+    "stopSequences": [
+        "Title"
+    ],
+    "temperature": 1.0,
+    "maxOutputTokens": 800,
+    "topP": 0.8,
+    "topK": 10
+  }
+}
+
+###
+
+# Count tokens for a long prompt
+POST https://generativelanguage.googleapis.com/{{version}}/models/{{model}}:countTokens?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "contents": [{
+    "parts": [{
+      "text": "Write an extended story about a magic backpack."
+    }]
+  }]
+}
+
+###
+
+# Using multi-turn conversations (chat)
+POST https://generativelanguage.googleapis.com/{{version}}/models/{{model}}:generateContent?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "contents": [
+    {"role": "user",
+      "parts": [{
+        "text": "Write the first line of a story about a magic backpack."}]},
+    {"role": "model",
+      "parts": [{
+        "text": "In the bustling city of Meadow brook, lived a young girl named Sophie. She was a bright and curious soul with an imaginative mind."}]},
+    {"role": "user",
+      "parts": [{
+        "text": "Can you set it in a quiet village in 1600s France?"}]},
+  ]
+}
+
+###
