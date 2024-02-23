@@ -1,0 +1,76 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@projectId={{$dotenv PROJECT_ID}}
+# gcloud auth print-access-token
+@accessToken={{$dotenv ACCESS_TOKEN}}
+@region=us-central1
+@model=gemini-1.0-pro
+@apiEndpoint={{region}}-aiplatform.googleapis.com
+
+# Send a text-only request
+POST https://{{apiEndpoint}}/v1/projects/{{projectId}}/locations/{{region}}/publishers/google/models/{{model}}:streamGenerateContent
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "contents": {
+    "role": "USER",
+    "parts": { "text": "Why is the sky blue?" }
+  }
+}
+
+###
+
+# Send a text-only request with model parameters and safety settings
+POST https://{{apiEndpoint}}/v1/projects/{{projectId}}/locations/{{region}}/publishers/google/models/{{model}}:streamGenerateContent
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "contents": {
+    "role": "USER",
+    "parts": { "text": "Why is the sky blue?" }
+  },
+  "generation_config": {
+    "temperature": 0.2,
+    "top_p": 0.1,
+    "top_k": 16,
+    "max_output_tokens": 2048,
+    "candidate_count": 1,
+    "stop_sequences": []
+  },
+  "safety_settings": {
+    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    "threshold": "BLOCK_LOW_AND_ABOVE"
+  }
+}
+
+###
+
+# Using multi-turn conversations (chat) 
+POST https://{{apiEndpoint}}/v1/projects/{{projectId}}/locations/{{region}}/publishers/google/models/{{model}}:streamGenerateContent
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "contents": [
+    {
+      "role": "user",
+      "parts": [
+        { "text": "Hello" }
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        { "text": "Hello! I am glad you could both make it." }
+      ]
+    },
+    {
+      "role": "user",
+      "parts": [
+        { "text": "So what is the first order of business?" }
+      ]
+    }
+  ]
+}
