@@ -2,7 +2,7 @@
 
 @apiKey={{$dotenv API_KEY}}
 @version=v1beta
-@model=gemini-pro
+@model=gemini-2.0-flash
 
 # Get a list of available models and description
 GET https://generativelanguage.googleapis.com/{{version}}/models?key={{apiKey}}
